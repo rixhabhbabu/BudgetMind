@@ -1,6 +1,8 @@
-# BudgetMind
+# BudgetMind AI
 
-BudgetMind is a resume-ready AI finance SaaS that helps users track spending, scan receipts, parse UPI messages, monitor cards, detect subscriptions, and export financial health reports.
+“Understand Your Money. Control Your Future.”
+
+BudgetMind AI is a production-style MERN + FastAPI fintech SaaS for expense tracking, AI financial analytics, UPI/card transaction intelligence, receipt scanning, subscription detection, budgeting, savings goals, and PDF reporting.
 
 ## Apps
 
@@ -37,6 +39,61 @@ Use the `develop` branch for integration work. Feature branches in this reposito
 - OCR: receipt extraction service boundary
 - Reports: PDF monthly report export
 - Operations: notifications, audit logs, validation, and rate limiting
+
+## API Reference
+
+### Auth
+
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `POST /api/auth/forgot-password`
+- `POST /api/auth/reset-password`
+- `POST /api/auth/google`
+
+### Expenses
+
+- `GET /api/expenses`
+- `POST /api/expenses`
+- `PATCH /api/expenses/:id`
+- `DELETE /api/expenses/:id`
+
+### UPI, Cards, Bills
+
+- `POST /api/upi/connect`
+- `GET /api/upi/transactions`
+- `POST /api/cards/add`
+- `GET /api/cards`
+- `GET /api/cards/transactions`
+- `POST /api/bills/upload`
+
+### AI and Reports
+
+- `GET /api/ai/analyze`
+- `GET /api/ai/predict`
+- `POST /api/ai/chat`
+- `GET /api/reports/monthly.pdf`
+
+## Architecture
+
+```text
+apps/frontend       React, Vite, Tailwind, Framer Motion, Recharts
+apps/backend        Express, JWT, bcryptjs, Mongoose, PDFKit
+services/ai-service FastAPI, pandas, numpy, scikit-learn
+```
+
+## Deployment
+
+Use [DEPLOYMENT.md](./DEPLOYMENT.md) for Vercel and Render setup. The repository includes `vercel.json`, `render.yaml`, Dockerfiles, health checks, and service-level `.env.example` files.
+
+## Screenshots
+
+Add screenshots from the deployed Vercel app here:
+
+- Dashboard
+- Expenses
+- AI insights
+- UPI and cards
+- OCR scanner
 
 ## Showcase Features
 

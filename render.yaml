@@ -3,11 +3,26 @@ services:
     name: budgetmind-api
     env: node
     rootDir: apps/backend
-    buildCommand: npm install
+    buildCommand: npm install --omit=dev
     startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: CLIENT_ORIGIN
+        sync: false
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ENCRYPTION_KEY
+        generateValue: true
+      - key: AI_SERVICE_URL
+        sync: false
   - type: web
     name: budgetmind-ai
     env: python
     rootDir: services/ai-service
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
