@@ -11,16 +11,41 @@ export function AuthProvider({ children }) {
 
   async function login(payload) {
     const { data } = await api.post("/auth/login", payload);
+    if (data.requiresOtp) return data;
     localStorage.setItem("budgetmind_token", data.token);
     localStorage.setItem("budgetmind_user", JSON.stringify(data.user));
     setUser(data.user);
+    return data;
   }
 
   async function register(payload) {
     const { data } = await api.post("/auth/register", payload);
+    if (data.requiresOtp) return data;
     localStorage.setItem("budgetmind_token", data.token);
     localStorage.setItem("budgetmind_user", JSON.stringify(data.user));
     setUser(data.user);
+    return data;
+  }
+
+  async function verifySignupOtp(payload) {
+    const { data } = await api.post("/auth/verify-signup-otp", payload);
+    localStorage.setItem("budgetmind_token", data.token);
+    localStorage.setItem("budgetmind_user", JSON.stringify(data.user));
+    setUser(data.user);
+    return data;
+  }
+
+  async function resendSignupOtp(payload) {
+    const { data } = await api.post("/auth/resend-signup-otp", payload);
+    return data;
+  }
+
+  async function googleLogin(payload) {
+    const { data } = await api.post("/auth/google", payload);
+    localStorage.setItem("budgetmind_token", data.token);
+    localStorage.setItem("budgetmind_user", JSON.stringify(data.user));
+    setUser(data.user);
+    return data;
   }
 
   function logout() {
@@ -29,7 +54,10 @@ export function AuthProvider({ children }) {
     setUser(null);
   }
 
-  const value = useMemo(() => ({ user, login, register, logout }), [user]);
+  const value = useMemo(
+    () => ({ user, login, register, verifySignupOtp, resendSignupOtp, googleLogin, logout }),
+    [user]
+  );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 

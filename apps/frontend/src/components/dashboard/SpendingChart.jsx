@@ -10,15 +10,15 @@ export function SpendingChart() {
         <AreaChart data={monthlyTrend}>
           <defs>
             <linearGradient id="spend" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="5%" stopColor="#0F766E" stopOpacity={0.35} />
-              <stop offset="95%" stopColor="#0F766E" stopOpacity={0} />
+              <stop offset="5%" stopColor="#1D4ED8" stopOpacity={0.35} />
+              <stop offset="95%" stopColor="#1D4ED8" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="4 4" stroke="#d7e2df" />
+          <CartesianGrid strokeDasharray="4 4" stroke="#dbe3ef" />
           <XAxis dataKey="month" />
           <YAxis />
           <Tooltip />
-          <Area dataKey="spend" stroke="#0F766E" fill="url(#spend)" strokeWidth={3} />
+          <Area dataKey="spend" stroke="#1D4ED8" fill="url(#spend)" strokeWidth={3} />
         </AreaChart>
       </ResponsiveContainer>
     </Card>
