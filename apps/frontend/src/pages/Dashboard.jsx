@@ -6,6 +6,8 @@ import { MetricCard } from "../components/dashboard/MetricCard.jsx";
 import { RecentTransactions } from "../components/dashboard/RecentTransactions.jsx";
 import { SpendingChart } from "../components/dashboard/SpendingChart.jsx";
 import { OnboardingChecklist } from "../components/onboarding/OnboardingChecklist.jsx";
+import { PredictionChart } from "../components/dashboard/PredictionChart.jsx";
+import { SpendingHeatmap } from "../components/dashboard/SpendingHeatmap.jsx";
 
 export function Dashboard() {
   return (
@@ -23,6 +25,8 @@ export function Dashboard() {
           <CategoryDonut />
           <RecentTransactions />
           <InsightPanel />
+          <PredictionChart />
+          <SpendingHeatmap />
           <div className="col-span-12"><OnboardingChecklist /></div>
         </div>
       </div>
