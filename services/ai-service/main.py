@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 
 from analysis import analyze_expenses
+from anomaly import detect_unusual_transactions
 from prediction import predict_month_end
 
 app = FastAPI(title="BudgetMind AI Service")
@@ -24,7 +25,10 @@ def health():
 
 @app.post("/analyze")
 def analyze(expenses: list[Expense]):
-    return analyze_expenses([expense.model_dump() for expense in expenses])
+    payload = [expense.model_dump() for expense in expenses]
+    result = analyze_expenses(payload)
+    result["unusualTransactions"] = detect_unusual_transactions(payload)
+    return result
 
 
 @app.post("/predict")

@@ -6,6 +6,7 @@ def analyze_expenses(expenses):
     return {
         "totals": totals,
         "topCategory": top_category,
+        "savingsPotential": round(sum(totals.values()) * 0.12, 2),
         "recommendations": [
             f"Review {top_category} expenses for savings opportunities.",
             "Set a weekly discretionary cap.",
