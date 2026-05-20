@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "description": "AI-powered personal finance SaaS with expense intelligence, bill scanning, UPI parsing, and card analytics.",
+  "workspaces": [
+    "apps/frontend",
+    "apps/backend"
+  ],
   "scripts": {
     "dev": "npm-run-all --parallel dev:frontend dev:backend dev:ai",
     "dev:frontend": "npm --prefix apps/frontend run dev",
