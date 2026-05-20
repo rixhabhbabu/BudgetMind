@@ -16,7 +16,5 @@ app.use(morgan("dev"));
 app.use(demoRateLimit);
 
 app.get("/health", (_, res) => res.json({ status: "ok", service: "budgetmind-api" }));
-app.get("/api/dashboard", (_, res) => res.json({ monthlySpend: 38600, savingsRate: 31, financialScore: 786 }));
-
 registerRoutes(app);
 app.use(errorHandler);

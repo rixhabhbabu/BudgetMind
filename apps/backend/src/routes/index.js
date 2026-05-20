@@ -3,6 +3,7 @@ import { auditRoutes } from "./auditRoutes.js";
 import { authRoutes } from "./authRoutes.js";
 import { budgetRoutes } from "./budgetRoutes.js";
 import { cardRoutes } from "./cardRoutes.js";
+import { dashboardRoutes } from "./dashboardRoutes.js";
 import { expenseRoutes } from "./expenseRoutes.js";
 import { goalRoutes } from "./goalRoutes.js";
 import { notificationRoutes } from "./notificationRoutes.js";
@@ -14,6 +15,7 @@ import { userRoutes } from "./userRoutes.js";
 export function registerRoutes(app) {
   app.use("/api/auth", authRoutes);
   app.use("/api/users", userRoutes);
+  app.use("/api/dashboard", dashboardRoutes);
   app.use("/api/expenses", expenseRoutes);
   app.use("/api/budgets", budgetRoutes);
   app.use("/api/goals", goalRoutes);
