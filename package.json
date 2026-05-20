@@ -1,0 +1,22 @@
+{
+  "name": "budgetmind",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI-powered personal finance SaaS with expense intelligence, bill scanning, UPI parsing, and card analytics.",
+  "scripts": {
+    "dev": "npm-run-all --parallel dev:frontend dev:backend dev:ai",
+    "dev:frontend": "npm --prefix apps/frontend run dev",
+    "dev:backend": "npm --prefix apps/backend run dev",
+    "dev:ai": "uvicorn main:app --reload --app-dir services/ai-service",
+    "build": "npm --prefix apps/frontend run build",
+    "lint": "npm --prefix apps/frontend run lint && npm --prefix apps/backend run lint",
+    "test": "npm --prefix apps/backend test",
+    "seed": "npm --prefix apps/backend run seed"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
