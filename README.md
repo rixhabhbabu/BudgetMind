@@ -17,6 +17,27 @@ npm run dev
 
 Copy `.env.example` to `.env` in each service and set the values for your environment.
 
+## Development Workflow
+
+```bash
+npm run dev:frontend
+npm run dev:backend
+npm run dev:ai
+```
+
+Use the `develop` branch for integration work. Feature branches in this repository mirror the product areas: `frontend`, `backend`, and `ai-service`.
+
+## API Modules
+
+- Auth: registration, login, JWT profile protection, forgot-password token generation
+- Expenses: CRUD, categorization, filtering-ready schema
+- Budgets: category limits, threshold alerts, usage summaries
+- Goals: savings goal tracking and contribution coaching
+- Payments: mock UPI parsing and card tracking
+- OCR: receipt extraction service boundary
+- Reports: PDF monthly report export
+- Operations: notifications, audit logs, validation, and rate limiting
+
 ## Showcase Features
 
 - JWT authentication and protected API routes
