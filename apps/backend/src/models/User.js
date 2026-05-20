@@ -5,6 +5,10 @@ const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
   passwordHash: { type: String, required: true },
+  encryptedUpiId: String,
+  monthlyBudget: { type: Number, default: 0 },
+  financialScore: { type: Number, default: 650 },
+  googleId: String,
   resetToken: String,
   resetTokenExpiresAt: Date
 }, { timestamps: true });
