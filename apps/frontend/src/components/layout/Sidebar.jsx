@@ -1,12 +1,16 @@
-import { Bot, CreditCard, FileScan, LayoutDashboard, ListFilter, Repeat } from "lucide-react";
+import { Bell, Bot, CreditCard, FileScan, Flag, LayoutDashboard, ListFilter, PiggyBank, Repeat, Settings } from "lucide-react";
 
 const items = [
   ["dashboard", LayoutDashboard, "Dashboard"],
   ["expenses", ListFilter, "Expenses"],
+  ["budgets", PiggyBank, "Budgets"],
+  ["goals", Flag, "Goals"],
   ["insights", Bot, "AI"],
   ["payments", CreditCard, "Payments"],
   ["scanner", FileScan, "Scanner"],
-  ["subscriptions", Repeat, "Subscriptions"]
+  ["subscriptions", Repeat, "Subscriptions"],
+  ["activity", Bell, "Activity"],
+  ["settings", Settings, "Settings"]
 ];
 
 export function Sidebar({ activePage, onNavigate }) {
