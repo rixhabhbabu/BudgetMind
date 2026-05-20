@@ -3,6 +3,7 @@ import { Plus } from "lucide-react";
 import { AddExpenseModal } from "../components/expenses/AddExpenseModal.jsx";
 import { ExpenseFilters } from "../components/expenses/ExpenseFilters.jsx";
 import { ExpenseTable } from "../components/expenses/ExpenseTable.jsx";
+import { VoiceExpenseEntry } from "../components/expenses/VoiceExpenseEntry.jsx";
 import { Button } from "../components/ui/Button.jsx";
 import { useExpenseQuery } from "../hooks/useExpenseQuery.js";
 
@@ -18,6 +19,7 @@ export function Expenses() {
         </div>
         <Button onClick={() => setOpen(true)}><Plus size={18} />Add expense</Button>
       </div>
+      <VoiceExpenseEntry />
       <ExpenseFilters {...query} />
       <ExpenseTable expenses={query.expenses} />
       <AddExpenseModal open={open} onClose={() => setOpen(false)} />
