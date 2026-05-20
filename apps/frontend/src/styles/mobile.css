@@ -1,0 +1,22 @@
+@media (max-width: 720px) {
+  .app-shell {
+    display: block;
+  }
+
+  .mobile-stack {
+    display: grid;
+    gap: 0.875rem;
+  }
+
+  .metric-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .content-pad {
+    padding: 1rem;
+  }
+}
