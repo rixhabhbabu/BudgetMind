@@ -1,0 +1,10 @@
+{
+  "buildCommand": "npm --prefix apps/frontend run build",
+  "outputDirectory": "apps/frontend/dist",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/"
+    }
+  ]
+}
