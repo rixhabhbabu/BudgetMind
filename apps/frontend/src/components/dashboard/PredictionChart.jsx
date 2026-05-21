@@ -18,7 +18,7 @@ export function PredictionChart() {
           <XAxis dataKey="month" />
           <YAxis />
           <Tooltip />
-          <Line type="monotone" dataKey="predicted" stroke="#F97368" strokeWidth={3} dot={{ r: 5 }} />
+          <Line type="monotone" dataKey="predicted" stroke="#DC2626" strokeWidth={3} dot={{ r: 5 }} />
         </LineChart>
       </ResponsiveContainer>
     </Card>

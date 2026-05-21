@@ -4,10 +4,10 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink: "#17202A",
-        ocean: "#0F766E",
-        mint: "#A7F3D0",
-        coral: "#F97368",
+        ink: "#0B1220",
+        ocean: "#1D4ED8",
+        mint: "#DBEAFE",
+        coral: "#DC2626",
         amber: "#F59E0B"
       },
       boxShadow: {

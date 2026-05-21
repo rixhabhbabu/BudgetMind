@@ -1,4 +1,5 @@
-import { Bell, Bot, CreditCard, FileScan, Flag, LayoutDashboard, ListFilter, PiggyBank, Repeat, Settings } from "lucide-react";
+import { useAuth } from "../../context/AuthContext.jsx";
+import { Bell, Bot, CreditCard, FileScan, Flag, LayoutDashboard, ListFilter, PiggyBank, Repeat, Settings, ShieldCheck } from "lucide-react";
 
 const items = [
   ["dashboard", LayoutDashboard, "Dashboard"],
@@ -10,10 +11,14 @@ const items = [
   ["scanner", FileScan, "Scanner"],
   ["subscriptions", Repeat, "Subscriptions"],
   ["activity", Bell, "Activity"],
+  ["admin", ShieldCheck, "Admin"],
   ["settings", Settings, "Settings"]
 ];
 
 export function Sidebar({ activePage, onNavigate }) {
+  const { user } = useAuth();
+  const visibleItems = items.filter(([key]) => key !== "admin" || user?.role === "admin");
+
   return (
     <aside className="sticky top-0 h-screen border-r border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-950">
       <div className="mb-8 flex h-11 items-center gap-3">
@@ -21,7 +26,7 @@ export function Sidebar({ activePage, onNavigate }) {
         <strong className="hidden text-lg lg:block">BudgetMind</strong>
       </div>
       <nav className="grid gap-2">
-        {items.map(([key, Icon, label]) => (
+        {visibleItems.map(([key, Icon, label]) => (
           <button key={key} onClick={() => onNavigate(key)} className={`flex h-11 items-center gap-3 rounded-md px-3 text-left text-sm font-semibold transition ${activePage === key ? "bg-ocean text-white" : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"}`}>
             <Icon size={19} />
             <span className="hidden lg:inline">{label}</span>

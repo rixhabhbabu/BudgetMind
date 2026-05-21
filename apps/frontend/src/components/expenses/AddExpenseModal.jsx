@@ -11,7 +11,7 @@ export function AddExpenseModal({ open, onClose }) {
         <Input label="Merchant" placeholder="Coffee House" />
         <Input label="Amount" type="number" placeholder="450" />
         <Input label="Category" placeholder="Food" />
-        {saved && <p className="rounded-md bg-emerald-50 p-3 text-sm font-semibold text-emerald-700">Expense saved in demo mode.</p>}
+        {saved && <p className="rounded-md bg-blue-50 p-3 text-sm font-semibold text-blue-700">Expense saved in demo mode.</p>}
         <Button type="submit">Save expense</Button>
       </form>
     </Modal>

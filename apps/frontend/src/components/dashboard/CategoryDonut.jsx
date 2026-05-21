@@ -2,7 +2,7 @@ import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { categories } from "../../data/mockData.js";
 import { Card } from "../ui/Card.jsx";
 
-const colors = ["#0F766E", "#F97368", "#F59E0B", "#2563EB", "#14B8A6"];
+const colors = ["#1D4ED8", "#0F172A", "#60A5FA", "#F59E0B", "#DC2626"];
 
 export function CategoryDonut() {
   return (

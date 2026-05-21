@@ -1,0 +1,10 @@
+
+> @budgetmind/backend@1.0.0 dev
+> node --watch src/server.js
+
+BudgetMind API running on 5000
+[0mGET /health [32m200[0m 4.222 ms - 42[0m
+[0mPOST /api/auth/login [31m500[0m 10013.630 ms - 88[0m
+Restarting 'src/server.js'
+Restarting 'src/server.js'
+BudgetMind API running on 5000

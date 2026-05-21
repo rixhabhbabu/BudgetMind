@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AppLayout } from "./components/layout/AppLayout.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
 import { AuthPage } from "./pages/AuthPage.jsx";
@@ -12,6 +12,7 @@ import { Budgets } from "./pages/Budgets.jsx";
 import { Goals } from "./pages/Goals.jsx";
 import { Settings } from "./pages/Settings.jsx";
 import { Activity } from "./pages/Activity.jsx";
+import { Admin } from "./pages/Admin.jsx";
 
 const pages = {
   dashboard: Dashboard,
@@ -23,6 +24,7 @@ const pages = {
   scanner: Scanner,
   subscriptions: Subscriptions,
   activity: Activity,
+  admin: Admin,
   settings: Settings
 };
 
@@ -31,7 +33,19 @@ export default function App() {
   const [page, setPage] = useState("dashboard");
   const Page = pages[page] ?? Dashboard;
 
-  if (!user) return <AuthPage />;
+  useEffect(() => {
+    if (user && page === "auth") setPage("dashboard");
+    if (page === "admin" && user?.role !== "admin") setPage("dashboard");
+  }, [page, user]);
+
+  if (page === "auth") return <AuthPage />;
+  if (page === "admin" && user?.role !== "admin") {
+    return (
+      <AppLayout activePage="dashboard" onNavigate={setPage}>
+        <Dashboard />
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout activePage={page} onNavigate={setPage}>
