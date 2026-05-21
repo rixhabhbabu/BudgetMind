@@ -38,6 +38,7 @@ export default function App() {
     if (page === "admin" && user?.role !== "admin") setPage("dashboard");
   }, [page, user]);
 
+  if (!user) return <AuthPage />;
   if (page === "auth") return <AuthPage />;
   if (page === "admin" && user?.role !== "admin") {
     return (
