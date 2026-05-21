@@ -11,7 +11,7 @@ export function SpendingHeatmap() {
       <h2 className="mb-4 text-lg font-black">Spending heatmap</h2>
       <div className="grid grid-cols-7 gap-2">
         {days.map((item) => (
-          <span key={item.day} title={`Day ${item.day}`} className="aspect-square rounded-md" style={{ backgroundColor: ["#E2E8F0", "#A7F3D0", "#2DD4BF", "#F59E0B", "#F97368"][item.level] }} />
+          <span key={item.day} title={`Day ${item.day}`} className="aspect-square rounded-md" style={{ backgroundColor: ["#E2E8F0", "#DBEAFE", "#60A5FA", "#F59E0B", "#DC2626"][item.level] }} />
         ))}
       </div>
     </Card>
