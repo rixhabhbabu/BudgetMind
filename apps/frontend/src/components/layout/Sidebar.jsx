@@ -1,4 +1,4 @@
-import { Bell, Bot, CreditCard, FileScan, Flag, LayoutDashboard, ListFilter, PiggyBank, Repeat, Settings } from "lucide-react";
+import { Bell, Bot, CreditCard, FileScan, Flag, LayoutDashboard, ListFilter, PiggyBank, Repeat, Settings, ShieldCheck } from "lucide-react";
 
 const items = [
   ["dashboard", LayoutDashboard, "Dashboard"],
@@ -10,6 +10,7 @@ const items = [
   ["scanner", FileScan, "Scanner"],
   ["subscriptions", Repeat, "Subscriptions"],
   ["activity", Bell, "Activity"],
+  ["admin", ShieldCheck, "Admin"],
   ["settings", Settings, "Settings"]
 ];
 

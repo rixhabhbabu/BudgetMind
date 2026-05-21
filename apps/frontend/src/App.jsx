@@ -12,6 +12,7 @@ import { Budgets } from "./pages/Budgets.jsx";
 import { Goals } from "./pages/Goals.jsx";
 import { Settings } from "./pages/Settings.jsx";
 import { Activity } from "./pages/Activity.jsx";
+import { Admin } from "./pages/Admin.jsx";
 
 const pages = {
   dashboard: Dashboard,
@@ -23,6 +24,7 @@ const pages = {
   scanner: Scanner,
   subscriptions: Subscriptions,
   activity: Activity,
+  admin: Admin,
   settings: Settings
 };
 
