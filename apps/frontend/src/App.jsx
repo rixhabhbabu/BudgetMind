@@ -29,7 +29,7 @@ const pages = {
 };
 
 export default function App() {
-  const { user } = useAuth();
+  const { loading, user } = useAuth();
   const [page, setPage] = useState("dashboard");
   const Page = pages[page] ?? Dashboard;
 
@@ -37,6 +37,17 @@ export default function App() {
     if (user && page === "auth") setPage("dashboard");
     if (page === "admin" && user?.role !== "admin") setPage("dashboard");
   }, [page, user]);
+
+  if (loading) {
+    return (
+      <main className="grid min-h-dvh place-items-center bg-slate-50 p-4 dark:bg-slate-950">
+        <div className="surface rounded-lg p-6 text-center shadow-panel">
+          <strong className="text-lg">Loading BudgetMind</strong>
+          <p className="mt-2 text-sm text-slate-500 dark:text-slate-300">Checking your session...</p>
+        </div>
+      </main>
+    );
+  }
 
   if (!user) return <AuthPage />;
   if (page === "auth") return <AuthPage />;

@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { api } from "../services/api.js";
 
 const AuthContext = createContext(null);
@@ -8,6 +8,37 @@ export function AuthProvider({ children }) {
     const stored = localStorage.getItem("budgetmind_user");
     return stored ? JSON.parse(stored) : null;
   });
+  const [loading, setLoading] = useState(() => Boolean(localStorage.getItem("budgetmind_token")));
+
+  useEffect(() => {
+    const token = localStorage.getItem("budgetmind_token");
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+
+    let active = true;
+    async function loadProfile() {
+      try {
+        const { data } = await api.get("/users/me");
+        if (!active) return;
+        localStorage.setItem("budgetmind_user", JSON.stringify(data.user));
+        setUser(data.user);
+      } catch {
+        if (!active) return;
+        localStorage.removeItem("budgetmind_token");
+        localStorage.removeItem("budgetmind_user");
+        setUser(null);
+      } finally {
+        if (active) setLoading(false);
+      }
+    }
+
+    loadProfile();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   async function login(payload) {
     const { data } = await api.post("/auth/login", payload);
@@ -67,8 +98,8 @@ export function AuthProvider({ children }) {
   }
 
   const value = useMemo(
-    () => ({ user, login, register, verifySignupOtp, resendSignupOtp, googleLogin, updateProfile, changePassword, logout }),
-    [user]
+    () => ({ user, loading, login, register, verifySignupOtp, resendSignupOtp, googleLogin, updateProfile, changePassword, logout }),
+    [loading, user]
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
