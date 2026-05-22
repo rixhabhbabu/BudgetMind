@@ -23,6 +23,7 @@ export function Settings() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const initials = useMemo(() => (profile.name || user?.name || "U").slice(0, 1).toUpperCase(), [profile.name, user?.name]);
 
@@ -79,6 +80,39 @@ export function Settings() {
     }
   }
 
+  async function uploadProfilePicture(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+    const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+    if (!cloudName || !uploadPreset) {
+      setError("Cloudinary env missing. Add VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET.");
+      return;
+    }
+
+    setMessage("");
+    setError("");
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", uploadPreset);
+      const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+        method: "POST",
+        body: formData
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error?.message ?? "Cloudinary upload failed");
+      update("profilePicture", data.secure_url);
+      setMessage("Profile picture uploaded. Save profile to keep it.");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setUploading(false);
+    }
+  }
+
   if (!user) {
     return (
       <Card>
@@ -108,6 +142,10 @@ export function Settings() {
             )}
             <div className="min-w-0 flex-1">
               <Input label="Profile picture URL" value={profile.profilePicture} onChange={(e) => update("profilePicture", e.target.value)} placeholder="https://..." />
+              <label className="mt-3 inline-flex min-h-10 cursor-pointer items-center justify-center gap-2 rounded-md border border-slate-200 bg-white px-4 text-sm font-semibold text-ink transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-white">
+                <Camera size={18} /> {uploading ? "Uploading..." : "Upload from device"}
+                <input type="file" accept="image/*" className="hidden" onChange={uploadProfilePicture} disabled={uploading} />
+              </label>
             </div>
             <Camera className="hidden text-slate-400 sm:block" />
           </div>

@@ -1,23 +1,23 @@
 import { useMemo, useState } from "react";
-import { Mail, MessageSquareText, Phone, ShieldCheck, WalletCards } from "lucide-react";
+import { Mail, MessageSquareText, ShieldCheck, WalletCards } from "lucide-react";
 import { useAuth } from "../context/AuthContext.jsx";
 import { Button } from "../components/ui/Button.jsx";
 import { Input } from "../components/ui/Input.jsx";
 import { ThemeToggle } from "../components/ui/ThemeToggle.jsx";
 
-const initialForm = { name: "", email: "", mobile: "", password: "" };
+const initialForm = { name: "", email: "", password: "" };
 
 export function AuthPage() {
   const { login, register, verifySignupOtp, resendSignupOtp, googleLogin } = useAuth();
   const [mode, setMode] = useState("login");
   const [form, setForm] = useState(initialForm);
-  const [otpForm, setOtpForm] = useState({ emailOtp: "", mobileOtp: "" });
+  const [emailOtp, setEmailOtp] = useState("");
   const [pendingOtp, setPendingOtp] = useState(null);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const identifier = useMemo(() => form.email || form.mobile, [form.email, form.mobile]);
+  const identifier = useMemo(() => form.email, [form.email]);
 
   function update(field, value) {
     setForm((current) => ({ ...current, [field]: value }));
@@ -28,11 +28,11 @@ export function AuthPage() {
     setError("");
     setNotice("");
     setPendingOtp(null);
-    setOtpForm({ emailOtp: "", mobileOtp: "" });
+    setEmailOtp("");
   }
 
   function otpNotice(response) {
-    if (response.devOtps) return `Demo email OTP: ${response.devOtps.emailOtp} | Demo mobile OTP: ${response.devOtps.mobileOtp}`;
+    if (response.devOtp) return `Demo email OTP: ${response.devOtp}`;
     return response.message;
   }
 
@@ -65,7 +65,7 @@ export function AuthPage() {
     setError("");
     setLoading(true);
     try {
-      await verifySignupOtp({ identifier, ...otpForm });
+      await verifySignupOtp({ identifier, emailOtp });
     } catch (err) {
       setError(err.response?.data?.message ?? "OTP verification failed.");
     } finally {
@@ -116,8 +116,8 @@ export function AuthPage() {
           <p className="max-w-xl text-sm leading-6 text-slate-600 dark:text-slate-300 md:text-base">Track expenses, budgets, goals, reports, and AI insights with a cleaner banking-style interface.</p>
           <div className="mt-5 grid gap-2 text-sm text-slate-600 dark:text-slate-300 md:mt-8 md:gap-3">
             <span className="flex items-center gap-2"><Mail size={18} /> Email signup and signin</span>
-            <span className="flex items-center gap-2"><Phone size={18} /> Mobile number based signin</span>
-            <span className="flex items-center gap-2"><ShieldCheck size={18} /> Email and mobile OTP verification</span>
+            <span className="flex items-center gap-2"><ShieldCheck size={18} /> Email OTP verification</span>
+            <span className="flex items-center gap-2"><Mail size={18} /> Mobile number can be added later</span>
           </div>
         </div>
 
@@ -137,13 +137,12 @@ export function AuthPage() {
             <form onSubmit={verifyOtp} className="grid gap-4">
               <div>
                 <h2 className="text-xl font-black">Verify your account</h2>
-                <p className="mt-1 text-sm text-slate-500 dark:text-slate-300">Enter both OTP codes to activate signup.</p>
+                <p className="mt-1 text-sm text-slate-500 dark:text-slate-300">Enter the OTP sent to your email to activate signup.</p>
               </div>
-              <Input label="Email OTP" inputMode="numeric" maxLength={6} value={otpForm.emailOtp} onChange={(e) => setOtpForm((current) => ({ ...current, emailOtp: e.target.value }))} />
-              <Input label="Mobile OTP" inputMode="numeric" maxLength={6} value={otpForm.mobileOtp} onChange={(e) => setOtpForm((current) => ({ ...current, mobileOtp: e.target.value }))} />
+              <Input label="Email OTP" inputMode="numeric" maxLength={6} value={emailOtp} onChange={(e) => setEmailOtp(e.target.value)} />
               {notice && <p className="rounded-md bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-700 dark:bg-blue-950 dark:text-blue-200">{notice}</p>}
               {error && <p className="text-sm text-coral">{error}</p>}
-              <Button type="submit" disabled={loading || otpForm.emailOtp.length < 6 || otpForm.mobileOtp.length < 6}>
+              <Button type="submit" disabled={loading || emailOtp.length < 6}>
                 <ShieldCheck size={18} /> {loading ? "Verifying..." : "Verify OTP"}
               </Button>
               <Button type="button" variant="secondary" onClick={resendOtp} disabled={loading}>
@@ -154,7 +153,6 @@ export function AuthPage() {
             <form onSubmit={submit} className="grid gap-4">
               {mode === "register" && <Input label="Name" value={form.name} onChange={(e) => update("name", e.target.value)} required />}
               <Input label="Email" type="email" value={form.email} onChange={(e) => update("email", e.target.value)} required={mode === "register"} />
-              <Input label="Mobile number" type="tel" value={form.mobile} onChange={(e) => update("mobile", e.target.value)} required={mode === "register"} />
               <Input label="Password" type="password" value={form.password} onChange={(e) => update("password", e.target.value)} required />
               {notice && <p className="rounded-md bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-700 dark:bg-blue-950 dark:text-blue-200">{notice}</p>}
               {error && <p className="text-sm text-coral">{error}</p>}

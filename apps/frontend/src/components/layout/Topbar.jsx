@@ -10,6 +10,11 @@ export function Topbar({ onNavigate }) {
       <div>
         <p className="text-sm text-slate-500 dark:text-slate-400">{user ? "Welcome back" : "Explore BudgetMind"}</p>
         <h1 className="text-xl font-bold">{user?.name ?? "Guest mode"}</h1>
+        {user && !user.mobile && (
+          <button type="button" onClick={() => onNavigate("settings")} className="mt-1 text-left text-sm font-semibold text-amber-600 dark:text-amber-300">
+            Add mobile number to complete your profile
+          </button>
+        )}
       </div>
       <div className="flex items-center gap-2">
         <div className="hidden h-10 items-center gap-2 rounded-md border border-slate-200 px-3 text-sm text-slate-500 md:flex dark:border-slate-700">

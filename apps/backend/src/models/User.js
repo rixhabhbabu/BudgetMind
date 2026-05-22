@@ -17,7 +17,6 @@ const userSchema = new mongoose.Schema({
   emailVerified: { type: Boolean, default: false },
   mobileVerified: { type: Boolean, default: false },
   signupEmailOtpHash: String,
-  signupMobileOtpHash: String,
   signupOtpExpiresAt: Date,
   resetToken: String,
   resetTokenExpiresAt: Date
