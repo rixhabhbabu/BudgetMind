@@ -8,5 +8,6 @@ export const env = {
   jwtSecret: process.env.JWT_SECRET ?? "budgetmind-local-secret",
   encryptionKey: process.env.ENCRYPTION_KEY ?? "budgetmind-local-encryption-key",
   clientOrigin: process.env.CLIENT_ORIGIN ?? "http://localhost:5173",
-  aiServiceUrl: process.env.AI_SERVICE_URL ?? "http://localhost:8000"
+  aiServiceUrl: process.env.AI_SERVICE_URL ?? "http://localhost:8000",
+  adminInviteCode: process.env.ADMIN_INVITE_CODE ?? ""
 };

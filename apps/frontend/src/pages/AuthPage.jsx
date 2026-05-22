@@ -5,7 +5,7 @@ import { Button } from "../components/ui/Button.jsx";
 import { Input } from "../components/ui/Input.jsx";
 import { ThemeToggle } from "../components/ui/ThemeToggle.jsx";
 
-const initialForm = { name: "", email: "", mobile: "", password: "" };
+const initialForm = { name: "", email: "", mobile: "", password: "", role: "user", adminInviteCode: "" };
 
 export function AuthPage() {
   const { login, register, verifySignupOtp, resendSignupOtp, googleLogin } = useAuth();
@@ -153,6 +153,28 @@ export function AuthPage() {
           ) : (
             <form onSubmit={submit} className="grid gap-4">
               {mode === "register" && <Input label="Name" value={form.name} onChange={(e) => update("name", e.target.value)} required />}
+              {mode === "register" && (
+                <label className="grid gap-2 text-sm font-medium text-slate-600 dark:text-slate-200">
+                  Account type
+                  <select
+                    className="min-h-11 rounded-md border border-slate-200 bg-white px-3 text-ink outline-none ring-ocean/20 transition focus:ring-4 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+                    value={form.role}
+                    onChange={(e) => update("role", e.target.value)}
+                  >
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </label>
+              )}
+              {mode === "register" && form.role === "admin" && (
+                <Input
+                  label="Admin invite code"
+                  type="password"
+                  value={form.adminInviteCode}
+                  onChange={(e) => update("adminInviteCode", e.target.value)}
+                  required
+                />
+              )}
               <Input label="Email" type="email" value={form.email} onChange={(e) => update("email", e.target.value)} required={mode === "register"} />
               <Input label="Mobile number" type="tel" value={form.mobile} onChange={(e) => update("mobile", e.target.value)} required={mode === "register"} />
               <Input label="Password" type="password" value={form.password} onChange={(e) => update("password", e.target.value)} required />

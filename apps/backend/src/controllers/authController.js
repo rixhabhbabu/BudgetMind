@@ -43,6 +43,14 @@ async function setSignupOtp(user) {
   return { emailOtp, mobileOtp };
 }
 
+function requestedRole(payload) {
+  if (payload.role !== "admin") return "user";
+  if (!env.adminInviteCode || payload.adminInviteCode !== env.adminInviteCode) {
+    throw httpError(403, "Valid admin invite code required");
+  }
+  return "admin";
+}
+
 function otpResponse(user, otps) {
   return {
     requiresOtp: true,
@@ -67,11 +75,12 @@ export async function register(req, res, next) {
       existing.name = req.body.name;
       existing.email = email;
       existing.mobile = mobile;
+      existing.role = existing.role ?? requestedRole(req.body);
       existing.passwordHash = await bcrypt.hash(req.body.password, 10);
       const otps = await setSignupOtp(existing);
       return res.status(202).json(otpResponse(existing, otps));
     }
-    const user = await User.createWithPassword({ ...req.body, email, mobile });
+    const user = await User.createWithPassword({ ...req.body, email, mobile, role: requestedRole(req.body) });
     const otps = await setSignupOtp(user);
     res.status(201).json(otpResponse(user, otps));
   } catch (error) {
@@ -85,6 +94,10 @@ export async function login(req, res, next) {
     const query = identifier.includes("@") ? { email: identifier.toLowerCase() } : { mobile: normalizeMobile(identifier) };
     const user = await User.findOne(query);
     if (!user || !(await user.verifyPassword(req.body.password))) throw httpError(401, "Invalid email/mobile or password");
+    if (!user.role) {
+      user.role = "user";
+      await user.save();
+    }
     if (user.signupEmailOtpHash && user.signupMobileOtpHash && (!user.emailVerified || !user.mobileVerified)) {
       const otps = await setSignupOtp(user);
       return res.status(403).json(otpResponse(user, otps));
