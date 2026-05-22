@@ -3,7 +3,7 @@ import { Card } from "../ui/Card.jsx";
 export function BudgetProgress({ budgets }) {
   return (
     <div className="grid gap-4">
-      {budgets.map((budget) => {
+      {budgets.length ? budgets.map((budget) => {
         const used = Math.min(100, Math.round((budget.spent / budget.limit) * 100));
         return (
           <Card key={budget.category}>
@@ -19,7 +19,11 @@ export function BudgetProgress({ budgets }) {
             </div>
           </Card>
         );
-      })}
+      }) : (
+        <Card>
+          <p className="text-sm font-semibold text-slate-500">No budgets found yet. Add category limits to start tracking budget usage.</p>
+        </Card>
+      )}
     </div>
   );
 }

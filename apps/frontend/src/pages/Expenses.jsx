@@ -21,8 +21,10 @@ export function Expenses() {
       </div>
       <VoiceExpenseEntry />
       <ExpenseFilters {...query} />
+      {query.loading && <p className="rounded-md bg-blue-50 p-3 text-sm font-semibold text-blue-700 dark:bg-blue-950 dark:text-blue-200">Loading real expense data...</p>}
+      {query.error && <p className="rounded-md bg-rose-50 p-3 text-sm font-semibold text-rose-700 dark:bg-rose-950 dark:text-rose-200">{query.error}</p>}
       <ExpenseTable expenses={query.expenses} />
-      <AddExpenseModal open={open} onClose={() => setOpen(false)} />
+      <AddExpenseModal open={open} onClose={() => setOpen(false)} onSave={query.addExpense} />
     </div>
   );
 }

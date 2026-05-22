@@ -1,8 +1,7 @@
+import { useEffect, useState } from "react";
 import {
   Activity,
   AlertTriangle,
-  Ban,
-  CheckCircle2,
   Database,
   Download,
   Eye,
@@ -15,33 +14,15 @@ import {
 import { MotionPage } from "../components/common/MotionPage.jsx";
 import { Button } from "../components/ui/Button.jsx";
 import { Card } from "../components/ui/Card.jsx";
+import { fetchAdminOverview } from "../services/api.js";
 
-const adminMetrics = [
-  { label: "Total users", value: "12,480", change: "+8.4%", icon: Users },
-  { label: "Verified accounts", value: "10,936", change: "87.6%", icon: UserCheck },
-  { label: "Risk alerts", value: "28", change: "6 high", icon: AlertTriangle },
-  { label: "System uptime", value: "99.9%", change: "Healthy", icon: Server }
-];
+function rupee(value) {
+  return `₹${Number(value ?? 0).toLocaleString("en-IN")}`;
+}
 
-const users = [
-  { name: "Ritesh Kumar", email: "ritesh@example.com", plan: "Pro", status: "Verified", spend: "Rs. 38,600", risk: "Low" },
-  { name: "Ananya Singh", email: "ananya@example.com", plan: "Free", status: "Pending OTP", spend: "Rs. 18,240", risk: "Medium" },
-  { name: "Mohit Sharma", email: "mohit@example.com", plan: "Pro", status: "Verified", spend: "Rs. 72,900", risk: "High" },
-  { name: "Neha Verma", email: "neha@example.com", plan: "Free", status: "Verified", spend: "Rs. 9,420", risk: "Low" }
-];
-
-const alerts = [
-  { title: "Multiple failed logins", detail: "5 attempts from new device", level: "High", time: "12 min ago" },
-  { title: "Unusual spend spike", detail: "Card spend 240% above average", level: "Medium", time: "34 min ago" },
-  { title: "Receipt OCR fallback", detail: "Scanner used mock parser", level: "Low", time: "1 hr ago" }
-];
-
-const health = [
-  { service: "Frontend", status: "Online", detail: "Vite client responding" },
-  { service: "Backend API", status: "Online", detail: "Express routes healthy" },
-  { service: "AI Service", status: "Warning", detail: "Local FastAPI dependency needed" },
-  { service: "Database", status: "Setup", detail: "Connect MongoDB URI" }
-];
+function formatDate(value) {
+  return value ? new Date(value).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" }) : "";
+}
 
 function StatusBadge({ value }) {
   const styles = {
@@ -63,6 +44,37 @@ function StatusBadge({ value }) {
 }
 
 export function Admin() {
+  const [overview, setOverview] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let active = true;
+    async function loadOverview() {
+      setLoading(true);
+      setError("");
+      try {
+        const data = await fetchAdminOverview();
+        if (active) setOverview(data);
+      } catch (err) {
+        if (active) setError(err.response?.data?.message ?? "Could not load admin overview.");
+      } finally {
+        if (active) setLoading(false);
+      }
+    }
+    loadOverview();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const metrics = [
+    { label: "Total users", value: overview?.metrics?.totalUsers ?? 0, change: "Real accounts", icon: Users },
+    { label: "Verified accounts", value: overview?.metrics?.verifiedUsers ?? 0, change: "Email verified", icon: UserCheck },
+    { label: "Risk alerts", value: overview?.metrics?.riskAlerts ?? 0, change: `${overview?.metrics?.highRisk ?? 0} high`, icon: AlertTriangle },
+    { label: "Service status", value: overview?.health?.some((item) => item.status === "Warning") ? "Warning" : "Online", change: "Live checks", icon: Server }
+  ];
+
   return (
     <MotionPage>
       <div className="grid gap-5">
@@ -71,7 +83,7 @@ export function Admin() {
             <p className="text-sm font-semibold text-blue-700 dark:text-blue-300">Admin control center</p>
             <h1 className="text-2xl font-black text-ink dark:text-white">Platform overview</h1>
             <p className="mt-1 max-w-2xl text-sm text-slate-500 dark:text-slate-300">
-              Monitor users, verification status, risk activity, and core service health from one place.
+              Monitor real users, verification status, risk activity, and core service health from one place.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -80,8 +92,11 @@ export function Admin() {
           </div>
         </div>
 
+        {loading && <p className="rounded-md bg-blue-50 p-3 text-sm font-semibold text-blue-700 dark:bg-blue-950 dark:text-blue-200">Loading real platform data...</p>}
+        {error && <p className="rounded-md bg-rose-50 p-3 text-sm font-semibold text-rose-700 dark:bg-rose-950 dark:text-rose-200">{error}</p>}
+
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {adminMetrics.map(({ label, value, change, icon: Icon }) => (
+          {metrics.map(({ label, value, change, icon: Icon }) => (
             <Card key={label}>
               <div className="flex items-start justify-between gap-3">
                 <div>
@@ -102,43 +117,43 @@ export function Admin() {
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h2 className="text-lg font-black">User management</h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Verification, plan, spend, and risk snapshot.</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Verification, role, budget, spend, and risk snapshot.</p>
               </div>
               <Button variant="secondary"><Users size={18} /> Manage roles</Button>
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[720px] border-separate border-spacing-y-2 text-left text-sm">
+              <table className="w-full min-w-[760px] border-separate border-spacing-y-2 text-left text-sm">
                 <thead className="text-xs uppercase text-slate-400">
                   <tr>
                     <th className="px-3 py-2">User</th>
-                    <th className="px-3 py-2">Plan</th>
+                    <th className="px-3 py-2">Role</th>
                     <th className="px-3 py-2">Status</th>
+                    <th className="px-3 py-2">Monthly budget</th>
                     <th className="px-3 py-2">Monthly spend</th>
                     <th className="px-3 py-2">Risk</th>
                     <th className="px-3 py-2">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((user) => (
+                  {(overview?.users ?? []).map((user) => (
                     <tr key={user.email} className="bg-slate-50 dark:bg-slate-900">
                       <td className="rounded-l-md px-3 py-3">
                         <strong className="block">{user.name}</strong>
                         <span className="text-xs text-slate-500">{user.email}</span>
                       </td>
-                      <td className="px-3 py-3 font-semibold">{user.plan}</td>
+                      <td className="px-3 py-3 font-semibold capitalize">{user.role}</td>
                       <td className="px-3 py-3"><StatusBadge value={user.status} /></td>
-                      <td className="px-3 py-3 font-semibold">{user.spend}</td>
+                      <td className="px-3 py-3 font-semibold">{rupee(user.monthlyBudget)}</td>
+                      <td className="px-3 py-3 font-semibold">{rupee(user.monthlySpend)}</td>
                       <td className="px-3 py-3"><StatusBadge value={user.risk} /></td>
                       <td className="rounded-r-md px-3 py-3">
-                        <div className="flex gap-2">
-                          <Button variant="ghost" aria-label={`View ${user.name}`}><Eye size={17} /></Button>
-                          <Button variant="ghost" aria-label={`Restrict ${user.name}`}><Ban size={17} /></Button>
-                        </div>
+                        <Button variant="ghost" aria-label={`View ${user.name}`}><Eye size={17} /></Button>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
+              {!overview?.users?.length && <p className="rounded-md bg-slate-50 p-3 text-sm font-semibold text-slate-500 dark:bg-slate-900">No users found.</p>}
             </div>
           </Card>
 
@@ -149,16 +164,16 @@ export function Admin() {
                 <h2 className="text-lg font-black">Risk queue</h2>
               </div>
               <div className="grid gap-3">
-                {alerts.map((alert) => (
-                  <div key={alert.title} className="rounded-md border border-slate-200 p-3 dark:border-slate-800">
+                {(overview?.alerts ?? []).length ? overview.alerts.map((alert) => (
+                  <div key={alert.id} className="rounded-md border border-slate-200 p-3 dark:border-slate-800">
                     <div className="flex items-center justify-between gap-3">
                       <strong className="text-sm">{alert.title}</strong>
                       <StatusBadge value={alert.level} />
                     </div>
                     <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{alert.detail}</p>
-                    <span className="mt-2 block text-xs font-semibold text-slate-400">{alert.time}</span>
+                    <span className="mt-2 block text-xs font-semibold text-slate-400">{alert.user} • {formatDate(alert.createdAt)}</span>
                   </div>
-                ))}
+                )) : <p className="text-sm font-semibold text-slate-500">No active risk notifications.</p>}
               </div>
             </Card>
 
@@ -168,7 +183,7 @@ export function Admin() {
                 <h2 className="text-lg font-black">Service health</h2>
               </div>
               <div className="grid gap-3">
-                {health.map((item) => (
+                {(overview?.health ?? []).map((item) => (
                   <div key={item.service} className="flex items-center justify-between gap-3 rounded-md bg-slate-50 p-3 dark:bg-slate-900">
                     <div>
                       <strong className="block text-sm">{item.service}</strong>
@@ -189,17 +204,12 @@ export function Admin() {
               <h2 className="text-lg font-black">Admin activity</h2>
             </div>
             <div className="grid gap-3 text-sm">
-              {[
-                "Updated OTP verification policy for signup.",
-                "Reviewed high-risk transaction cluster.",
-                "Exported monthly compliance snapshot.",
-                "Changed platform color palette to trust blue."
-              ].map((event, index) => (
-                <p key={event} className="flex items-start gap-3 rounded-md bg-slate-50 p-3 dark:bg-slate-900">
-                  <CheckCircle2 className="mt-0.5 text-ocean" size={18} />
-                  <span><strong className="mr-2">#{index + 1}</strong>{event}</span>
+              {(overview?.activity ?? []).length ? overview.activity.map((event) => (
+                <p key={event.id} className="rounded-md bg-slate-50 p-3 dark:bg-slate-900">
+                  <strong className="mr-2">{event.action}</strong>{event.entity} by {event.user}
+                  <span className="mt-1 block text-xs text-slate-500">{formatDate(event.createdAt)}</span>
                 </p>
-              ))}
+              )) : <p className="text-sm font-semibold text-slate-500">No admin activity recorded yet.</p>}
             </div>
           </Card>
 

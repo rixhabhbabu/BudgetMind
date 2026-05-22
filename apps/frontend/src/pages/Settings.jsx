@@ -5,6 +5,7 @@ import { Button } from "../components/ui/Button.jsx";
 import { Card } from "../components/ui/Card.jsx";
 import { Input } from "../components/ui/Input.jsx";
 import { ThemeToggle } from "../components/ui/ThemeToggle.jsx";
+import { Toast } from "../components/ui/Toast.jsx";
 
 const emptyProfile = {
   name: "",
@@ -20,9 +21,12 @@ export function Settings() {
   const { user, updateProfile, changePassword } = useAuth();
   const [profile, setProfile] = useState(emptyProfile);
   const [passwords, setPasswords] = useState({ currentPassword: "", newPassword: "" });
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
-  const [saving, setSaving] = useState(false);
+  const [profileMessage, setProfileMessage] = useState("");
+  const [profileError, setProfileError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [toast, setToast] = useState("");
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [savingPassword, setSavingPassword] = useState(false);
   const [uploading, setUploading] = useState(false);
 
   const initials = useMemo(() => (profile.name || user?.name || "U").slice(0, 1).toUpperCase(), [profile.name, user?.name]);
@@ -46,9 +50,9 @@ export function Settings() {
 
   async function saveProfile(event) {
     event.preventDefault();
-    setMessage("");
-    setError("");
-    setSaving(true);
+    setProfileMessage("");
+    setProfileError("");
+    setSavingProfile(true);
     try {
       await updateProfile({
         ...profile,
@@ -56,27 +60,29 @@ export function Settings() {
         monthlyBudget: Number(profile.monthlyBudget || 0),
         savingsTarget: Number(profile.savingsTarget || 0)
       });
-      setMessage("Profile updated successfully.");
+      setProfileMessage("Profile updated successfully.");
+      setToast("Profile updated successfully.");
+      setTimeout(() => setToast(""), 2800);
     } catch (err) {
-      setError(err.response?.data?.message ?? "Could not update profile.");
+      setProfileError(err.response?.data?.message ?? "Could not update profile.");
     } finally {
-      setSaving(false);
+      setSavingProfile(false);
     }
   }
 
   async function savePassword(event) {
     event.preventDefault();
-    setMessage("");
-    setError("");
-    setSaving(true);
+    setPasswordError("");
+    setSavingPassword(true);
     try {
       await changePassword(passwords);
       setPasswords({ currentPassword: "", newPassword: "" });
-      setMessage("Password changed successfully.");
+      setToast("Password changed successfully.");
+      setTimeout(() => setToast(""), 2800);
     } catch (err) {
-      setError(err.response?.data?.message ?? "Could not change password.");
+      setPasswordError(err.response?.data?.message ?? "Could not change password.");
     } finally {
-      setSaving(false);
+      setSavingPassword(false);
     }
   }
 
@@ -87,12 +93,12 @@ export function Settings() {
     const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
     const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
     if (!cloudName || !uploadPreset) {
-      setError("Cloudinary env missing. Add VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET.");
+      setProfileError("Cloudinary env missing. Add VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET.");
       return;
     }
 
-    setMessage("");
-    setError("");
+    setProfileMessage("");
+    setProfileError("");
     setUploading(true);
     try {
       const formData = new FormData();
@@ -105,9 +111,11 @@ export function Settings() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error?.message ?? "Cloudinary upload failed");
       update("profilePicture", data.secure_url);
-      setMessage("Profile picture uploaded. Save profile to keep it.");
+      setProfileMessage("Profile picture uploaded. Save profile to keep it.");
+      setToast("Profile picture uploaded.");
+      setTimeout(() => setToast(""), 2800);
     } catch (err) {
-      setError(err.message);
+      setProfileError(err.message);
     } finally {
       setUploading(false);
     }
@@ -124,6 +132,7 @@ export function Settings() {
 
   return (
     <div className="grid gap-5 xl:grid-cols-[1.25fr_0.75fr]">
+      {toast && <Toast message={toast} />}
       <Card>
         <div className="mb-5 flex items-center gap-3">
           <UserRound className="text-ocean" />
@@ -159,9 +168,9 @@ export function Settings() {
             <Input label="Savings target %" type="number" value={profile.savingsTarget} onChange={(e) => update("savingsTarget", e.target.value)} />
           </div>
 
-          {message && <p className="rounded-md bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-700 dark:bg-blue-950 dark:text-blue-200">{message}</p>}
-          {error && <p className="text-sm font-semibold text-coral">{error}</p>}
-          <Button type="submit" disabled={saving}><Save size={18} /> {saving ? "Saving..." : "Save profile"}</Button>
+          {profileMessage && <p className="rounded-md bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-700 dark:bg-blue-950 dark:text-blue-200">{profileMessage}</p>}
+          {profileError && <p className="text-sm font-semibold text-coral">{profileError}</p>}
+          <Button type="submit" disabled={savingProfile}><Save size={18} /> {savingProfile ? "Saving..." : "Save profile"}</Button>
         </form>
       </Card>
 
@@ -189,7 +198,10 @@ export function Settings() {
           <form onSubmit={savePassword} className="grid gap-4">
             <Input label="Current password" type="password" value={passwords.currentPassword} onChange={(e) => setPasswords((current) => ({ ...current, currentPassword: e.target.value }))} />
             <Input label="New password" type="password" value={passwords.newPassword} onChange={(e) => setPasswords((current) => ({ ...current, newPassword: e.target.value }))} />
-            <Button type="submit" disabled={saving || !passwords.currentPassword || passwords.newPassword.length < 8}>Update password</Button>
+            {passwordError && <p className="text-sm font-semibold text-coral">{passwordError}</p>}
+            <Button type="submit" disabled={savingPassword || !passwords.currentPassword || passwords.newPassword.length < 8}>
+              {savingPassword ? "Updating..." : "Update password"}
+            </Button>
           </form>
         </Card>
       </div>

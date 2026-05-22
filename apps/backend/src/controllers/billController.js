@@ -2,6 +2,15 @@ import { Bill } from "../models/Bill.js";
 import { Expense } from "../models/Expense.js";
 import { extractReceipt } from "../services/ocrService.js";
 
+export async function listBills(req, res, next) {
+  try {
+    const bills = await Bill.find({ userId: req.user.id }).sort({ createdAt: -1 }).limit(50);
+    res.json({ bills });
+  } catch (error) {
+    next(error);
+  }
+}
+
 export async function uploadBill(req, res, next) {
   try {
     const extracted = await extractReceipt(req.file);

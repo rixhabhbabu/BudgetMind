@@ -1,7 +1,18 @@
 import { Target } from "lucide-react";
 import { Card } from "../ui/Card.jsx";
 
-export function BudgetPlanner() {
+function rupee(value) {
+  return `₹${Number(value ?? 0).toLocaleString("en-IN")}`;
+}
+
+export function BudgetPlanner({ budgets = [] }) {
+  const totalLimit = budgets.reduce((sum, budget) => sum + Number(budget.limit ?? 0), 0);
+  const totalSpent = budgets.reduce((sum, budget) => sum + Number(budget.spent ?? 0), 0);
+  const remaining = Math.max(0, totalLimit - totalSpent);
+  const riskBudget = budgets
+    .filter((budget) => budget.limit)
+    .sort((a, b) => (b.spent / b.limit) - (a.spent / a.limit))[0];
+
   return (
     <Card>
       <div className="mb-4 flex items-center gap-3">
@@ -10,9 +21,9 @@ export function BudgetPlanner() {
       </div>
       <div className="grid gap-3 md:grid-cols-3">
         {[
-          ["Safe daily spend", "₹1,320"],
-          ["Planned savings", "₹24,000"],
-          ["Risk category", "Food"]
+          ["Monthly limit", rupee(totalLimit)],
+          ["Remaining", rupee(remaining)],
+          ["Highest risk", riskBudget?.category ?? "No budgets"]
         ].map(([label, value]) => (
           <div key={label} className="rounded-md bg-slate-50 p-4 dark:bg-slate-900">
             <p className="text-sm text-slate-500">{label}</p>

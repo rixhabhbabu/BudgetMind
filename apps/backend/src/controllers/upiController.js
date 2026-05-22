@@ -1,6 +1,5 @@
 import { Transaction } from "../models/Transaction.js";
 import { User } from "../models/User.js";
-import { generateMockTransactions } from "../services/mockTransactionService.js";
 import { parseUpiMessage } from "../services/upiParser.js";
 import { encryptText } from "../utils/crypto.js";
 
@@ -17,10 +16,7 @@ export async function connectUpi(req, res, next) {
 
 export async function listUpiTransactions(req, res, next) {
   try {
-    let transactions = await Transaction.find({ userId: req.user.id, paymentSource: "UPI" }).sort({ timestamp: -1 }).limit(50);
-    if (!transactions.length) {
-      transactions = await Transaction.insertMany(generateMockTransactions(req.query.app ?? "Google Pay").map((item) => ({ ...item, userId: req.user.id })));
-    }
+    const transactions = await Transaction.find({ userId: req.user.id, paymentSource: "UPI" }).sort({ timestamp: -1 }).limit(50);
     res.json({ transactions });
   } catch (error) {
     next(error);

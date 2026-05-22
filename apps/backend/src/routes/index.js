@@ -1,4 +1,5 @@
 import { aiRoutes } from "./aiRoutes.js";
+import { adminRoutes } from "./adminRoutes.js";
 import { auditRoutes } from "./auditRoutes.js";
 import { authRoutes } from "./authRoutes.js";
 import { budgetRoutes } from "./budgetRoutes.js";
@@ -16,6 +17,7 @@ import { upiRoutes } from "./upiRoutes.js";
 
 export function registerRoutes(app) {
   app.use("/api/auth", authRoutes);
+  app.use("/api/admin", adminRoutes);
   app.use("/api/users", userRoutes);
   app.use("/api/dashboard", dashboardRoutes);
   app.use("/api/expenses", expenseRoutes);

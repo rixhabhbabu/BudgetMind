@@ -6,7 +6,7 @@ export function AppLayout({ activePage, onNavigate, children }) {
     <div className="app-shell bg-slate-50 dark:bg-slate-950">
       <Sidebar activePage={activePage} onNavigate={onNavigate} />
       <main className="min-w-0">
-        <Topbar onNavigate={onNavigate} />
+        <Topbar activePage={activePage} onNavigate={onNavigate} />
         <div className="content-pad p-6">{children}</div>
       </main>
     </div>

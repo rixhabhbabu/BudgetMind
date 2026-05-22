@@ -1,7 +1,7 @@
 import { useAuth } from "../../context/AuthContext.jsx";
 import { Bell, Bot, CreditCard, FileScan, Flag, LayoutDashboard, ListFilter, PiggyBank, Repeat, Settings, ShieldCheck } from "lucide-react";
 
-const items = [
+export const navItems = [
   ["dashboard", LayoutDashboard, "Dashboard"],
   ["expenses", ListFilter, "Expenses"],
   ["budgets", PiggyBank, "Budgets"],
@@ -17,7 +17,7 @@ const items = [
 
 export function Sidebar({ activePage, onNavigate }) {
   const { user } = useAuth();
-  const visibleItems = items.filter(([key]) => key !== "admin" || user?.role === "admin");
+  const visibleItems = navItems.filter(([key]) => key !== "admin" || user?.role === "admin");
 
   return (
     <aside className="sticky top-0 h-screen border-r border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-950">

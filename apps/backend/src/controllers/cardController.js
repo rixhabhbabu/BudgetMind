@@ -1,6 +1,5 @@
 import { Card } from "../models/Card.js";
 import { Transaction } from "../models/Transaction.js";
-import { generateMockTransactions } from "../services/mockTransactionService.js";
 import { maskCardNumber, tokenizeCardNumber } from "../utils/crypto.js";
 
 export async function listCards(req, res, next) {
@@ -33,10 +32,7 @@ export async function createCard(req, res, next) {
 
 export async function listCardTransactions(req, res, next) {
   try {
-    let transactions = await Transaction.find({ userId: req.user.id, paymentSource: "Card" }).sort({ timestamp: -1 }).limit(50);
-    if (!transactions.length) {
-      transactions = await Transaction.insertMany(generateMockTransactions("Credit Card", 10).map((item) => ({ ...item, userId: req.user.id, paymentSource: "Card" })));
-    }
+    const transactions = await Transaction.find({ userId: req.user.id, paymentSource: "Card" }).sort({ timestamp: -1 }).limit(50);
     res.json({ transactions });
   } catch (error) {
     next(error);
