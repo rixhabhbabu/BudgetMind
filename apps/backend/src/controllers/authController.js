@@ -43,14 +43,6 @@ async function setSignupOtp(user) {
   return { emailOtp, mobileOtp };
 }
 
-function requestedRole(payload) {
-  if (payload.role !== "admin") return "user";
-  if (!env.adminInviteCode || payload.adminInviteCode !== env.adminInviteCode) {
-    throw httpError(403, "Valid admin invite code required");
-  }
-  return "admin";
-}
-
 function otpResponse(user, otps) {
   return {
     requiresOtp: true,
@@ -75,12 +67,12 @@ export async function register(req, res, next) {
       existing.name = req.body.name;
       existing.email = email;
       existing.mobile = mobile;
-      existing.role = existing.role ?? requestedRole(req.body);
+      existing.role = existing.role ?? "user";
       existing.passwordHash = await bcrypt.hash(req.body.password, 10);
       const otps = await setSignupOtp(existing);
       return res.status(202).json(otpResponse(existing, otps));
     }
-    const user = await User.createWithPassword({ ...req.body, email, mobile, role: requestedRole(req.body) });
+    const user = await User.createWithPassword({ ...req.body, email, mobile, role: "user" });
     const otps = await setSignupOtp(user);
     res.status(201).json(otpResponse(user, otps));
   } catch (error) {
