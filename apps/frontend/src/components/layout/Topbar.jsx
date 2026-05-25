@@ -35,22 +35,24 @@ export function Topbar({ activePage, onNavigate }) {
   }
 
   return (
-    <header className="app-topbar relative z-20 flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-white/80 px-6 py-4 backdrop-blur dark:border-slate-800 dark:bg-slate-950/80">
-      <div>
+    <header className="app-topbar relative z-20 flex items-center justify-between gap-3 border-b border-slate-200 bg-white/80 px-6 py-4 backdrop-blur dark:border-slate-800 dark:bg-slate-950/80">
+      <div className="topbar-copy min-w-0">
         <p className="text-sm text-slate-500 dark:text-slate-400">{user ? "Welcome back" : "Explore BudgetMind"}</p>
-        <h1 className="text-xl font-bold">{user?.name ?? "Guest mode"}</h1>
+        <h1 className="truncate text-xl font-bold">{user?.name ?? "Guest mode"}</h1>
         {user && !user.mobile && (
           <button type="button" onClick={() => onNavigate("settings")} className="mt-1 text-left text-sm font-semibold text-amber-600 dark:text-amber-300">
             Add mobile number to complete your profile
           </button>
         )}
       </div>
-      <div className="flex items-center gap-2">
+      <div className="topbar-actions flex shrink-0 items-center gap-2">
         <div className="hidden h-10 items-center gap-2 rounded-md border border-slate-200 px-3 text-sm text-slate-500 md:flex dark:border-slate-700">
           <Search size={16} />
           Search finance data
         </div>
-        <ThemeToggle />
+        <div className="theme-action">
+          <ThemeToggle />
+        </div>
         {user ? (
           <Button variant="ghost" className="hidden md:inline-flex" onClick={logout} aria-label="Logout">
             <LogOut size={18} />
@@ -61,11 +63,11 @@ export function Topbar({ activePage, onNavigate }) {
           </Button>
         )}
         {user && (
-          <div ref={menuRef} className="relative md:hidden">
+          <div ref={menuRef} className="mobile-profile-menu relative md:hidden">
             <button
               type="button"
               onClick={() => setMenuOpen((open) => !open)}
-              className="flex h-11 items-center gap-2 rounded-md border border-slate-200 bg-white px-2 text-left shadow-sm dark:border-slate-700 dark:bg-slate-900"
+              className="profile-menu-button flex h-11 items-center gap-2 rounded-md border border-slate-200 bg-white px-2 text-left shadow-sm dark:border-slate-700 dark:bg-slate-900"
               aria-expanded={menuOpen}
               aria-label="Open profile navigation"
             >
@@ -78,7 +80,7 @@ export function Topbar({ activePage, onNavigate }) {
             </button>
 
             {menuOpen && (
-              <div className="absolute right-0 mt-3 w-[min(18rem,calc(100vw-2rem))] overflow-hidden rounded-md border border-slate-200 bg-white shadow-panel dark:border-slate-800 dark:bg-slate-950">
+              <div className="mobile-nav-dropdown absolute right-0 mt-3 w-[min(18rem,calc(100vw-2rem))] overflow-hidden rounded-md border border-slate-200 bg-white shadow-panel dark:border-slate-800 dark:bg-slate-950">
                 <div className="border-b border-slate-100 px-4 py-3 dark:border-slate-800">
                   <p className="truncate text-sm font-bold">{user.name}</p>
                   <p className="truncate text-xs text-slate-500 dark:text-slate-400">{user.email}</p>

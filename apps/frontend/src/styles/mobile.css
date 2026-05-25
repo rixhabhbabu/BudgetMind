@@ -1,6 +1,15 @@
 @media (max-width: 720px) {
+  html,
+  body,
+  #root {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
   .app-shell {
     display: block;
+    min-width: 0;
+    width: 100%;
   }
 
   .app-shell > aside {
@@ -8,18 +17,66 @@
   }
 
   .app-topbar {
-    align-items: flex-start;
-    gap: 0.75rem;
-    padding: 0.875rem 1rem;
-  }
-
-  .app-topbar > div:first-child {
+    position: sticky;
+    top: 0;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 0.5rem;
     min-width: 0;
-    flex: 1 1 0;
+    padding: 0.75rem 0.875rem;
   }
 
-  .app-topbar > div:last-child {
+  .app-topbar .topbar-copy {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .app-topbar .topbar-copy p,
+  .app-topbar .topbar-copy button {
+    display: none;
+  }
+
+  .app-topbar .topbar-copy h1 {
+    max-width: 100%;
+    font-size: 1rem;
+    line-height: 1.25rem;
+  }
+
+  .app-topbar .topbar-actions {
     flex: 0 0 auto;
+    gap: 0.5rem;
+  }
+
+  .app-topbar .theme-action {
+    display: none;
+  }
+
+  .profile-menu-button {
+    height: 2.75rem;
+    width: 2.75rem;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .profile-menu-button svg {
+    display: none;
+  }
+
+  .profile-menu-button img,
+  .profile-menu-button span {
+    height: 2.25rem;
+    width: 2.25rem;
+    border-radius: 9999px;
+  }
+
+  .mobile-nav-dropdown {
+    position: fixed;
+    left: 0.875rem;
+    right: 0.875rem;
+    top: 4rem;
+    z-index: 50;
+    width: auto;
+    max-height: calc(100dvh - 5rem);
   }
 
   .mobile-stack {
@@ -35,7 +92,47 @@
     grid-template-columns: 1fr;
   }
 
+  .dashboard-grid > *,
+  .metric-grid > *,
+  .col-span-4,
+  .col-span-5,
+  .col-span-6,
+  .col-span-7,
+  .col-span-8,
+  .col-span-12 {
+    grid-column: 1 / -1 !important;
+    min-width: 0;
+  }
+
   .content-pad {
+    width: 100%;
+    min-width: 0;
+    padding: 0.875rem;
+  }
+
+  .surface {
+    max-width: 100%;
+    min-width: 0;
     padding: 1rem;
+  }
+
+  .recharts-responsive-container,
+  .recharts-wrapper,
+  .recharts-surface {
+    max-width: 100%;
+  }
+
+  table {
+    max-width: 100%;
+  }
+
+  h1,
+  h2,
+  h3,
+  p,
+  span,
+  strong,
+  button {
+    overflow-wrap: anywhere;
   }
 }
