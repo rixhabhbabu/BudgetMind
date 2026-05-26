@@ -19,7 +19,13 @@ const userSchema = new mongoose.Schema({
   signupEmailOtpHash: String,
   signupOtpExpiresAt: Date,
   resetToken: String,
-  resetTokenExpiresAt: Date
+  resetTokenExpiresAt: Date,
+  notificationPreferences: {
+    budgetAlerts: { type: Boolean, default: true },
+    expenseNotifications: { type: Boolean, default: false },
+    weeklyReports: { type: Boolean, default: true },
+    alertThreshold: { type: Number, default: 80 }
+  }
 }, { timestamps: true });
 
 userSchema.methods.verifyPassword = function verifyPassword(password) {

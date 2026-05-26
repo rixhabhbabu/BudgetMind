@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { AppLayout } from "./components/layout/AppLayout.jsx";
+import { RealtimeNotifications } from "./components/common/RealtimeNotifications.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
+import { initializeSocket, disconnectSocket } from "./services/socketService.js";
 import { AuthPage } from "./pages/AuthPage.jsx";
 import { Dashboard } from "./pages/Dashboard.jsx";
 import { Expenses } from "./pages/Expenses.jsx";
@@ -29,9 +31,23 @@ const pages = {
 };
 
 export default function App() {
-  const { loading, user } = useAuth();
+  const { loading, user, token } = useAuth();
   const [page, setPage] = useState("dashboard");
   const Page = pages[page] ?? Dashboard;
+
+  useEffect(() => {
+    // Initialize WebSocket when user is authenticated
+    if (user && token) {
+      initializeSocket(token);
+    } else {
+      // Disconnect when logged out
+      disconnectSocket();
+    }
+
+    return () => {
+      // Cleanup on unmount
+    };
+  }, [user, token]);
 
   useEffect(() => {
     if (user && page === "auth") setPage("dashboard");
@@ -60,8 +76,11 @@ export default function App() {
   }
 
   return (
-    <AppLayout activePage={page} onNavigate={setPage}>
-      <Page />
-    </AppLayout>
+    <>
+      <AppLayout activePage={page} onNavigate={setPage}>
+        <Page />
+      </AppLayout>
+      <RealtimeNotifications />
+    </>
   );
 }

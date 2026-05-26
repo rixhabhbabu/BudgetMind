@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import { Camera, LockKeyhole, Save, ShieldCheck, UserRound } from "lucide-react";
+import { Camera, LockKeyhole, Save, ShieldCheck, UserRound, Bell } from "lucide-react";
 import { useAuth } from "../context/AuthContext.jsx";
 import { Button } from "../components/ui/Button.jsx";
 import { Card } from "../components/ui/Card.jsx";
 import { Input } from "../components/ui/Input.jsx";
 import { ThemeToggle } from "../components/ui/ThemeToggle.jsx";
 import { Toast } from "../components/ui/Toast.jsx";
+import { api } from "../services/api.js";
 
 const emptyProfile = {
   name: "",
@@ -28,6 +29,14 @@ export function Settings() {
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [notificationPrefs, setNotificationPrefs] = useState({
+    budgetAlerts: true,
+    expenseNotifications: false,
+    weeklyReports: true,
+    alertThreshold: 80
+  });
+  const [loadingNotifPrefs, setLoadingNotifPrefs] = useState(false);
+  const [savingNotifPrefs, setSavingNotifPrefs] = useState(false);
 
   const initials = useMemo(() => (profile.name || user?.name || "U").slice(0, 1).toUpperCase(), [profile.name, user?.name]);
 
@@ -42,7 +51,54 @@ export function Settings() {
       monthlyBudget: user.monthlyBudget ?? "",
       savingsTarget: user.savingsTarget ?? 30
     });
+    
+    // Fetch notification preferences
+    fetchNotificationPreferences();
   }, [user]);
+
+  async function fetchNotificationPreferences() {
+    try {
+      setLoadingNotifPrefs(true);
+      const response = await api.get("/notifications/preferences/get");
+      if (response.ok) {
+        const data = await response.json();
+        setNotificationPrefs(data.preferences);
+      }
+    } catch (error) {
+      console.error("Failed to fetch notification preferences:", error);
+    } finally {
+      setLoadingNotifPrefs(false);
+    }
+  }
+
+  async function saveNotificationPreferences() {
+    try {
+      setSavingNotifPrefs(true);
+      const response = await api.patch("/notifications/preferences/update", notificationPrefs);
+      if (response.ok) {
+        setToast("Notification preferences saved successfully.");
+        setTimeout(() => setToast(""), 2800);
+      }
+    } catch (error) {
+      console.error("Failed to save notification preferences:", error);
+      setToast("Failed to save notification preferences.");
+      setTimeout(() => setToast(""), 2800);
+    } finally {
+      setSavingNotifPrefs(false);
+    }
+  }
+
+  async function toggleBudgetAlerts() {
+    const newPrefs = { ...notificationPrefs, budgetAlerts: !notificationPrefs.budgetAlerts };
+    setNotificationPrefs(newPrefs);
+    try {
+      await api.patch("/notifications/preferences/budget-alerts/toggle");
+      setToast(`Budget alerts ${newPrefs.budgetAlerts ? 'enabled' : 'disabled'}.`);
+      setTimeout(() => setToast(""), 2800);
+    } catch (error) {
+      console.error("Failed to toggle budget alerts:", error);
+    }
+  }
 
   function update(field, value) {
     setProfile((current) => ({ ...current, [field]: value }));
@@ -188,6 +244,68 @@ export function Settings() {
             <span className="font-semibold">Role</span>
             <p className="mt-1 capitalize text-slate-500 dark:text-slate-300">{user.role ?? "user"}</p>
           </div>
+        </Card>
+
+        <Card>
+          <div className="mb-4 flex items-center gap-3">
+            <Bell className="text-ocean" />
+            <h2 className="text-xl font-black">Notifications</h2>
+          </div>
+          
+          {loadingNotifPrefs ? (
+            <p className="text-sm text-slate-500">Loading preferences...</p>
+          ) : (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between rounded-md bg-slate-50 p-3 dark:bg-slate-900">
+                <div className="flex-1">
+                  <label className="font-semibold">Budget Alerts</label>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Alert when spending reaches {notificationPrefs.alertThreshold}%</p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={notificationPrefs.budgetAlerts}
+                  onChange={toggleBudgetAlerts}
+                  className="h-5 w-5 cursor-pointer"
+                />
+              </div>
+
+              <div className="flex items-center justify-between rounded-md bg-slate-50 p-3 dark:bg-slate-900">
+                <label className="font-semibold">Expense Notifications</label>
+                <input
+                  type="checkbox"
+                  checked={notificationPrefs.expenseNotifications}
+                  onChange={(e) => setNotificationPrefs({...notificationPrefs, expenseNotifications: e.target.checked})}
+                  className="h-5 w-5 cursor-pointer"
+                />
+              </div>
+
+              <div className="flex items-center justify-between rounded-md bg-slate-50 p-3 dark:bg-slate-900">
+                <label className="font-semibold">Weekly Reports</label>
+                <input
+                  type="checkbox"
+                  checked={notificationPrefs.weeklyReports}
+                  onChange={(e) => setNotificationPrefs({...notificationPrefs, weeklyReports: e.target.checked})}
+                  className="h-5 w-5 cursor-pointer"
+                />
+              </div>
+
+              <div className="rounded-md bg-slate-50 p-3 dark:bg-slate-900">
+                <label className="block font-semibold">Alert Threshold (%)</label>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={notificationPrefs.alertThreshold}
+                  onChange={(e) => setNotificationPrefs({...notificationPrefs, alertThreshold: parseInt(e.target.value)})}
+                  className="mt-2 w-full rounded border border-slate-200 px-3 py-2 dark:border-slate-700 dark:bg-slate-800"
+                />
+              </div>
+
+              <Button onClick={saveNotificationPreferences} disabled={savingNotifPrefs} className="w-full">
+                <Save size={18} /> {savingNotifPrefs ? "Saving..." : "Save Preferences"}
+              </Button>
+            </div>
+          )}
         </Card>
 
         <Card>

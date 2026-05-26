@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Download, Loader } from "lucide-react";
 import { MotionPage } from "../components/common/MotionPage.jsx";
 import { CategoryDonut } from "../components/dashboard/CategoryDonut.jsx";
 import { FinancialScore } from "../components/dashboard/FinancialScore.jsx";
@@ -9,7 +10,8 @@ import { SpendingChart } from "../components/dashboard/SpendingChart.jsx";
 import { OnboardingChecklist } from "../components/onboarding/OnboardingChecklist.jsx";
 import { PredictionChart } from "../components/dashboard/PredictionChart.jsx";
 import { SpendingHeatmap } from "../components/dashboard/SpendingHeatmap.jsx";
-import { fetchDashboard } from "../services/api.js";
+import { Button } from "../components/ui/Button.jsx";
+import { fetchDashboard, api } from "../services/api.js";
 
 function rupee(value) {
   return `Rs. ${Number(value ?? 0).toLocaleString("en-IN")}`;
@@ -18,6 +20,7 @@ function rupee(value) {
 export function Dashboard() {
   const [summary, setSummary] = useState(null);
   const [error, setError] = useState("");
+  const [exportingPDF, setExportingPDF] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -35,10 +38,47 @@ export function Dashboard() {
     };
   }, []);
 
+  async function downloadMonthlyReport() {
+    try {
+      setExportingPDF(true);
+      const response = await fetch("/api/reports/monthly.pdf", {
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("authToken")}`
+        }
+      });
+      
+      if (!response.ok) throw new Error("Failed to generate report");
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      const monthName = new Date().toLocaleDateString('default', { month: 'long', year: 'numeric' });
+      a.download = `BudgetMind-Report-${monthName}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error("PDF Download Error:", err);
+      alert("Failed to download report. Please try again.");
+    } finally {
+      setExportingPDF(false);
+    }
+  }
+
   return (
     <MotionPage>
       <div className="grid gap-5">
-        {error && <p className="rounded-md bg-rose-50 p-3 text-sm font-semibold text-rose-700 dark:bg-rose-950 dark:text-rose-200">{error}</p>}
+        <div className="flex items-center justify-between">
+          <div>
+            {error && <p className="rounded-md bg-rose-50 p-3 text-sm font-semibold text-rose-700 dark:bg-rose-950 dark:text-rose-200">{error}</p>}
+          </div>
+          <Button onClick={downloadMonthlyReport} disabled={exportingPDF} className="flex items-center gap-2">
+            <Download size={18} />
+            {exportingPDF ? "Generating..." : "Download Report"}
+          </Button>
+        </div>
         <div className="metric-grid">
           <MetricCard label="Monthly spend" value={rupee(summary?.monthlySpend)} change="Real data" positive={false} />
           <MetricCard label="Savings rate" value={`${summary?.savingsRate ?? 0}%`} change="Profile based" />
