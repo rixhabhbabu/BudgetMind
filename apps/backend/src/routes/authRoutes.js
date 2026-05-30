@@ -1,7 +1,7 @@
 import { Router } from "express";
 import {
   forgotPassword,
-  googleOAuth,
+  firebaseAuth,
   login,
   register,
   resendSignupOtp,
@@ -17,4 +17,6 @@ authRoutes.post("/verify-signup-otp", verifySignupOtp);
 authRoutes.post("/resend-signup-otp", resendSignupOtp);
 authRoutes.post("/forgot-password", forgotPassword);
 authRoutes.post("/reset-password", resetPassword);
-authRoutes.post("/google", googleOAuth);
+authRoutes.post("/firebase-login", firebaseAuth);
+authRoutes.post("/firebase-register", firebaseAuth);
+authRoutes.post("/google", firebaseAuth);

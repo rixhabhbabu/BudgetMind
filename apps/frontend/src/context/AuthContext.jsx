@@ -1,4 +1,12 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { firebaseAuth } from "../config/firebase.js";
+import { onAuthStateChanged } from "firebase/auth";
+import {
+  firebaseRegister,
+  firebaseLogin,
+  firebaseGoogleSignIn,
+  firebaseLogout
+} from "../services/firebaseService.js";
 import { api } from "../services/api.js";
 
 const AuthContext = createContext(null);
@@ -40,22 +48,39 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
-  async function login(payload) {
-    const { data } = await api.post("/auth/login", payload);
-    if (data.requiresOtp) return data;
-    localStorage.setItem("budgetmind_token", data.token);
-    localStorage.setItem("budgetmind_user", JSON.stringify(data.user));
-    setUser(data.user);
-    return data;
+  async function register(payload) {
+    try {
+      const { token } = await firebaseRegister(payload.email, payload.password, payload.name);
+      
+      // Send Firebase token to backend for verification
+      const { data } = await api.post("/auth/firebase-register", { 
+        token,
+        name: payload.name 
+      });
+      
+      localStorage.setItem("budgetmind_token", data.token);
+      localStorage.setItem("budgetmind_user", JSON.stringify(data.user));
+      setUser(data.user);
+      return data;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  async function register(payload) {
-    const { data } = await api.post("/auth/register", payload);
-    if (data.requiresOtp) return data;
-    localStorage.setItem("budgetmind_token", data.token);
-    localStorage.setItem("budgetmind_user", JSON.stringify(data.user));
-    setUser(data.user);
-    return data;
+  async function login(payload) {
+    try {
+      const { token } = await firebaseLogin(payload.email, payload.password);
+      
+      // Send Firebase token to backend for verification
+      const { data } = await api.post("/auth/firebase-login", { token });
+      
+      localStorage.setItem("budgetmind_token", data.token);
+      localStorage.setItem("budgetmind_user", JSON.stringify(data.user));
+      setUser(data.user);
+      return data;
+    } catch (error) {
+      throw error;
+    }
   }
 
   async function verifySignupOtp(payload) {
@@ -71,12 +96,20 @@ export function AuthProvider({ children }) {
     return data;
   }
 
-  async function googleLogin(payload) {
-    const { data } = await api.post("/auth/google", payload);
-    localStorage.setItem("budgetmind_token", data.token);
-    localStorage.setItem("budgetmind_user", JSON.stringify(data.user));
-    setUser(data.user);
-    return data;
+  async function googleLogin() {
+    try {
+      const { token } = await firebaseGoogleSignIn();
+      
+      // Send Firebase token to backend for verification
+      const { data } = await api.post("/auth/google", { token });
+      
+      localStorage.setItem("budgetmind_token", data.token);
+      localStorage.setItem("budgetmind_user", JSON.stringify(data.user));
+      setUser(data.user);
+      return data;
+    } catch (error) {
+      throw error;
+    }
   }
 
   async function updateProfile(payload) {
@@ -91,7 +124,12 @@ export function AuthProvider({ children }) {
     return data;
   }
 
-  function logout() {
+  async function logout() {
+    try {
+      await firebaseLogout();
+    } catch (error) {
+      console.error("Firebase logout error:", error);
+    }
     localStorage.removeItem("budgetmind_token");
     localStorage.removeItem("budgetmind_user");
     setUser(null);

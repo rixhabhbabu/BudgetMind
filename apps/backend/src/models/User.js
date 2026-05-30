@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema({
   savingsTarget: { type: Number, default: 30 },
   monthlyBudget: { type: Number, default: 0 },
   financialScore: { type: Number, default: 650 },
-  googleId: String,
+  firebaseUid: String,
   emailVerified: { type: Boolean, default: false },
   mobileVerified: { type: Boolean, default: false },
   signupEmailOtpHash: String,

@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import { firebaseAuth as firebase } from "../config/firebase.js";
 import { env } from "../config/env.js";
 import { User } from "../models/User.js";
 import { createResetToken } from "../services/tokenService.js";
@@ -155,23 +156,42 @@ export async function resetPassword(req, res, next) {
   }
 }
 
-export async function googleOAuth(req, res, next) {
+export async function firebaseAuth(req, res, next) {
   try {
-    const email = req.body.email;
-    const name = req.body.name ?? "Google User";
+    const { token } = req.body;
+
+    if (!token) {
+      throw httpError(400, "Firebase token is required");
+    }
+
+    // Verify token with Firebase
+    const decodedToken = await firebase.verifyIdToken(token);
+    
+    const email = decodedToken.email;
+    const name = decodedToken.name || "Firebase User";
+    const firebaseUid = decodedToken.uid;
+    const profilePicture = decodedToken.picture;
+
     let user = await User.findOne({ email });
+
     if (!user) {
+      // Create new user from Firebase
       user = await User.createWithPassword({
         name,
         email,
-        mobile: req.body.mobile,
-        password: `google-${req.body.googleId ?? Date.now()}`,
+        password: `firebase-${firebaseUid}`,
         emailVerified: true,
-        mobileVerified: Boolean(req.body.mobile)
+        profilePicture
       });
-      user.googleId = req.body.googleId;
+      user.firebaseUid = firebaseUid;
+      await user.save();
+    } else if (!user.firebaseUid) {
+      // Link Firebase UID to existing user
+      user.firebaseUid = firebaseUid;
+      if (!user.profilePicture) user.profilePicture = profilePicture;
       await user.save();
     }
+
     res.json({ token: sign(user), user: publicUser(user) });
   } catch (error) {
     next(error);

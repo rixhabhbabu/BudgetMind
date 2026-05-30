@@ -3,10 +3,24 @@ import { Modal } from "../ui/Modal.jsx";
 import { Input } from "../ui/Input.jsx";
 import { Button } from "../ui/Button.jsx";
 
+const CATEGORIES = [
+  "Food & Dining",
+  "Transportation",
+  "Shopping",
+  "Entertainment",
+  "Groceries",
+  "Utilities",
+  "Healthcare",
+  "Education",
+  "Travel",
+  "Subscription",
+  "Other"
+];
+
 const initialForm = {
   merchant: "",
   amount: "",
-  category: "",
+  category: "Food & Dining",
   method: "UPI",
   date: new Date().toISOString().slice(0, 10),
   notes: ""
@@ -41,7 +55,21 @@ export function AddExpenseModal({ open, onClose, onSave }) {
       <form className="grid gap-4" onSubmit={submit}>
         <Input label="Merchant" placeholder="Coffee House" value={form.merchant} onChange={(event) => update("merchant", event.target.value)} required />
         <Input label="Amount" type="number" placeholder="450" value={form.amount} onChange={(event) => update("amount", event.target.value)} required />
-        <Input label="Category" placeholder="Food" value={form.category} onChange={(event) => update("category", event.target.value)} required />
+        
+        <label className="grid gap-2 text-sm font-medium text-slate-600 dark:text-slate-200">
+          Category
+          <select 
+            className="min-h-11 rounded-md border border-slate-200 bg-white px-3 text-ink outline-none ring-ocean/20 transition focus:ring-4 dark:border-slate-700 dark:bg-slate-900 dark:text-white" 
+            value={form.category} 
+            onChange={(event) => update("category", event.target.value)}
+            required
+          >
+            {CATEGORIES.map((cat) => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
+          </select>
+        </label>
+        
         <label className="grid gap-2 text-sm font-medium text-slate-600 dark:text-slate-200">
           Method
           <select className="min-h-11 rounded-md border border-slate-200 bg-white px-3 text-ink outline-none ring-ocean/20 transition focus:ring-4 dark:border-slate-700 dark:bg-slate-900 dark:text-white" value={form.method} onChange={(event) => update("method", event.target.value)}>

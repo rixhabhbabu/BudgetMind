@@ -159,7 +159,6 @@ export function Insights() {
                 </div>
               </Card>
             )}
-            </div>
           </>
         )}
         </div>

@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext.jsx";
 import { Button } from "../components/ui/Button.jsx";
 import { Input } from "../components/ui/Input.jsx";
 import { ThemeToggle } from "../components/ui/ThemeToggle.jsx";
+import { GoogleLoginButton } from "../components/common/GoogleLoginButton.jsx";
 
 const initialForm = { name: "", email: "", password: "" };
 
@@ -114,11 +115,6 @@ export function AuthPage() {
           </div>
           <h1 className="mb-3 text-3xl font-black leading-tight md:text-4xl">Secure finance dashboard</h1>
           <p className="max-w-xl text-sm leading-6 text-slate-600 dark:text-slate-300 md:text-base">Track expenses, budgets, goals, reports, and AI insights with a cleaner banking-style interface.</p>
-          <div className="mt-5 grid gap-2 text-sm text-slate-600 dark:text-slate-300 md:mt-8 md:gap-3">
-            <span className="flex items-center gap-2"><Mail size={18} /> Email signup and signin</span>
-            <span className="flex items-center gap-2"><ShieldCheck size={18} /> Email OTP verification</span>
-            <span className="flex items-center gap-2"><Mail size={18} /> Mobile number can be added later</span>
-          </div>
         </div>
 
         <div className="border-t border-slate-200 p-5 dark:border-slate-800 md:border-l md:border-t-0 md:p-8">
@@ -160,7 +156,7 @@ export function AuthPage() {
               <div className="flex items-center gap-3 text-xs font-bold uppercase text-slate-400">
                 <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" /> or <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
               </div>
-              <Button type="button" variant="secondary" onClick={continueWithGoogle} disabled={loading}>Continue with Google</Button>
+              <GoogleLoginButton />
             </form>
           )}
         </div>
